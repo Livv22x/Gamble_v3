@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us</title>
+        <script>
+            (function(){
+                try{
+                    if(localStorage.getItem('casino-dark-mode') === 'true'){
+                        document.documentElement.classList.add('dark-mode');
+                    }
+                    if(localStorage.getItem('casino-debug') === 'true'){
+                        document.documentElement.classList.add('debug');
+                    }
+                }catch(e){}
+            })();
+        </script>
+    <link rel="stylesheet" href="../css/styles.css" />
+    <script src="../js/coin-system.js"></script>
+</head>
+<body>
+    <div class="coin-display" title="Your Coins">
+      <span class="coin-icon">🪙</span>
+      <span class="coin-amount" data-coin-balance>0</span>
+    </div>
+        <div class="coin-actions">
+            <button type="button" class="coin-btn coin-btn--secondary" aria-label="Remove 100 coins" onclick="window.Coins && Coins.spend(100)">-100</button>
+            <button type="button" class="coin-btn" aria-label="Add 100 coins" onclick="window.Coins && Coins.add(100)">+100</button>
+        </div>
+        <div class="coin-debug-toggle">
+            <button id="coin-debug-toggle-btn" type="button" class="coin-btn" onclick="toggleCoinDebug()">Enable Dev Coins</button>
+        </div>
+        <script>
+            (function(){
+                function setLabel(){
+                    var btn = document.getElementById('coin-debug-toggle-btn');
+                    if(!btn) return;
+                    var isOn = document.documentElement.classList.contains('debug');
+                    btn.textContent = isOn ? 'Disable Dev Coins' : 'Enable Dev Coins';
+                }
+                window.toggleCoinDebug = function(){
+                    var html = document.documentElement;
+                    var isOn = html.classList.toggle('debug');
+                    try { localStorage.setItem('casino-debug', isOn ? 'true' : 'false'); } catch(e){}
+                    setLabel();
+                };
+                if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setLabel); else setLabel();
+            })();
+        </script>
+        <div class="coin-actions">
+            <button type="button" class="coin-btn" aria-label="Add 100 coins" onclick="window.Coins && Coins.add(100)">+100</button>
+        </div>
+    <div class="dark-mode-toggle">
+        <label class="switch">
+            <input type="checkbox" id="dark-mode-switch" />
+            <span class="slider" aria-hidden="true"></span>
+            <span class="switch-text">Dark Mode</span>
+        </label>
+    </div>
+    <div class="container">
+        <a href="../index.html" class="back-button">← Back to Casino</a>
+        <h1>Contact Us</h1>
+        <p>Have questions or feedback? We'd love to hear from you!</p>
+        
+        <form name="contact" netlify class="contact-form">
+            <div class="form-group">
+                <label for="name">Name <span class="required">*</span></label>
+                <input type="text" id="name" name="name" required />
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email <span class="required">*</span></label>
+                <input type="email" id="email" name="email" required />
+            </div>
+            
+            <div class="form-group">
+                <label for="subject">Subject</label>
+                <input type="text" id="subject" name="subject" />
+            </div>
+            
+            <div class="form-group">
+                <label for="message">Message <span class="required">*</span></label>
+                <textarea id="message" name="message" rows="5" required></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="game">Favorite Game</label>
+                <select id="game" name="game">
+                    <option value="">Select a game...</option>
+                    <option value="dice">Dice Game</option>
+                    <option value="blackjack">Blackjack</option>
+                    <option value="slot">Slot Machine</option>
+                    <option value="cockfight">Cockfight</option>
+                </select>
+            </div>
+            
+            <button type="submit" class="submit-button">Send Message</button>
+        </form>
+    </div>
+    
+    <script src="../js/darkmode.js"></script>
+    <script src="../js/age-verify.js"></script>
+</body>
+</html>
