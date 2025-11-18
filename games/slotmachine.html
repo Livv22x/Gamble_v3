@@ -23,6 +23,7 @@
       <span class="coin-icon">🪙</span>
       <span class="coin-amount" data-coin-balance>0</span>
     </div>
+    <div class="coin-reset-countdown"><span data-coin-countdown>Next reset in --:--:--</span></div>
     <div class="coin-actions">
       <button type="button" class="coin-btn coin-btn--secondary" aria-label="Remove 100 coins" onclick="window.Coins && Coins.spend(100)">-100</button>
       <button type="button" class="coin-btn" aria-label="Add 100 coins" onclick="window.Coins && Coins.add(100)">+100</button>
@@ -32,14 +33,44 @@
     </div>
     <script>
       (function(){
+        const AUTH_FLAG = 'casino-devcoins-auth';
+
         function setLabel(){
           var btn = document.getElementById('coin-debug-toggle-btn');
           if(!btn) return;
           var isOn = document.documentElement.classList.contains('debug');
           btn.textContent = isOn ? 'Disable Dev Coins' : 'Enable Dev Coins';
         }
+
+        function isAuthorized(){
+          try { return sessionStorage.getItem(AUTH_FLAG) === 'true'; } catch(e){ return false; }
+        }
+
+        function normalizeStr(s){
+          try { return (s || '').normalize('NFKC').trim().toLowerCase(); } catch(e){ return (s || '').trim().toLowerCase(); }
+        }
+
+        function requestPassword(){
+          const input = prompt('Enter password to enable Dev Coins:');
+          if(input == null) return false;
+          const val = normalizeStr(input);
+          const pass1 = normalizeStr('Björn');
+          const pass2 = normalizeStr('Bjoern');
+          if(val === pass1 || val === pass2){
+            try { sessionStorage.setItem(AUTH_FLAG, 'true'); } catch(e){}
+            return true;
+          }
+          alert('Wrong password.');
+          return false;
+        }
+
         window.toggleCoinDebug = function(){
           var html = document.documentElement;
+          var currentlyOn = html.classList.contains('debug');
+          if(!currentlyOn && !isAuthorized()){
+            const ok = requestPassword();
+            if(!ok){ setLabel(); return; }
+          }
           var isOn = html.classList.toggle('debug');
           try { localStorage.setItem('casino-debug', isOn ? 'true' : 'false'); } catch(e){}
           setLabel();
@@ -48,9 +79,11 @@
       })();
     </script>
     <div class="dark-mode-toggle">
-      <label class="switch">
-        <input type="checkbox" id="dark-mode-switch" />
-        <span class="slider" aria-hidden="true"></span>
+      <label class="label">
+        <div class="toggle">
+          <input class="toggle-state" type="checkbox" id="dark-mode-switch" name="dark-mode" aria-label="Toggle dark mode" />
+          <div class="indicator"></div>
+        </div>
         <span class="switch-text">Dark Mode</span>
       </label>
     </div>
@@ -74,13 +107,11 @@
         <div id="slot-message"></div>
 
         <div class="coin-rules" aria-label="Coin rules for Slot Machine">
-          <h4>Coin Rules</h4>
-          <ul>
-            <li>Each spin costs your chosen bet (stake).</li>
-            <li>Three-of-a-kind (Jackpot): pays 10× your bet (stake already deducted).</li>
-            <li>Any two matching: pays 3× your bet (stake already deducted).</li>
-            <li>No match: no payout.</li>
-          </ul>
+          <p><strong>Rules:</strong></p>
+          <p>Each spin costs your chosen bet (stake).</p>
+          <p>Three-of-a-kind (Jackpot): pays 10× your bet (stake already deducted).</p>
+          <p>Any two matching: pays 3× your bet (stake already deducted).</p>
+          <p>No match: no payout.</p>
         </div>
       </div>
     </div>

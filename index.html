@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" class="has-grid-bg">
 <head>
     <meta charset="UTF-8"/>
     <title>Casino Games</title>
@@ -19,6 +19,101 @@
     </script>
     <link rel="stylesheet" href="css/styles.css"/>
     <script src="js/coin-system.js"></script>
+    <style>
+        /* Minimal, self-contained loader inspired by user's React example */
+        .casino-loader-card {
+            /* color used to softly clip top and bottom of the .words container */
+            --bg-color: #111;
+            background-color: var(--bg-color);
+            padding: 0.75rem 1rem;
+            border-radius: 1rem;
+            display: inline-block;
+            margin: 0.5rem 0 1rem;
+        }
+        .casino-loader {
+            color: rgb(124, 124, 124);
+            font-family: "Poppins", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+            font-weight: 500;
+            font-size: 18px;
+            box-sizing: content-box;
+            height: 32px;
+            padding: 6px 6px;
+            display: flex;
+            align-items: center;
+            border-radius: 8px;
+            gap: 6px;
+        }
+        .casino-loader .words {
+            overflow: hidden;
+            position: relative;
+            height: 1.2em; /* lock height to the line */
+        }
+        .casino-loader .words::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                var(--bg-color) 10%,
+                transparent 30%,
+                transparent 70%,
+                var(--bg-color) 90%
+            );
+            z-index: 1;
+            pointer-events: none;
+        }
+        .casino-loader .word {
+            display: block;
+            height: 100%;
+            padding-left: 6px;
+            color: #956afa;
+            animation: casino_spin 4s infinite;
+        }
+        @keyframes casino_spin {
+            10% { transform: translateY(-102%); }
+            25% { transform: translateY(-100%); }
+            35% { transform: translateY(-202%); }
+            50% { transform: translateY(-200%); }
+            60% { transform: translateY(-302%); }
+            75% { transform: translateY(-300%); }
+            85% { transform: translateY(-402%); }
+            100% { transform: translateY(-400%); }
+        }
+        /* Respect dark-mode if site uses it via .dark-mode on html */
+        .dark-mode .casino-loader-card { --bg-color: #0b0b0b; }
+
+        /* Inline title rotator variant (for replacing the word "Casino" in the H1) */
+        .casino-rotator {
+            display: inline-block;          /* behave like text, avoid flex baseline quirks */
+            vertical-align: text-bottom;    /* align with text line */
+            height: 1em;                   /* keep to one line height */
+            line-height: 1em;              /* ensure 1:1 with translateY percentages */
+            overflow: hidden;
+            position: relative;
+            white-space: nowrap;            /* prevent wrapping inside the rotator */
+            margin-left: 0ch;               /* tighter spacing from preceding text */
+        }
+        .casino-rotator .word {
+            display: block;
+            /* Fallback solid color, enhanced with blue gradient where supported */
+            color: #2b7cff;                 /* fallback if background-clip is not supported */
+            background-image: linear-gradient(90deg, #4FC3F7 0%, #1E88E5 50%, #0D47A1 100%);
+            background-clip: text;          /* standard */
+            animation: casino_spin 4s infinite;
+            line-height: 1em;
+            font-size: 1em;                 /* inherit exact size from H1 */
+            margin: 0; padding: 0;          /* avoid accidental offsets */
+        }
+
+        /* Only make the text transparent when background-clip:text is supported */
+        @supports (background-clip: text) {
+            .casino-rotator .word {
+                color: transparent;
+            }
+        }
+
+        /* Keep the word "the" and the rotator together on one line */
+        .no-wrap { white-space: nowrap; }
+    </style>
 </head>
 <body>
 <div class="coin-display" title="Your Coins">
@@ -27,6 +122,7 @@
 
     <span class="coin-amount" data-coin-balance>0</span>
 </div>
+<div class="coin-reset-countdown"><span data-coin-countdown>Next reset in --:--:--</span></div>
 <div class="coin-actions">
     <button type="button" class="coin-btn coin-btn--secondary" aria-label="Remove 100 coins"
             onclick="window.Coins && Coins.spend(100)">-100
@@ -40,6 +136,8 @@
 </div>
 <script>
     (function () {
+        const AUTH_FLAG = 'casino-devcoins-auth';
+
         function setLabel() {
             let btn = document.getElementById('coin-debug-toggle-btn');
             if (!btn) return;
@@ -47,27 +145,69 @@
             btn.textContent = isOn ? 'Disable Dev Coins' : 'Enable Dev Coins';
         }
 
+        function isAuthorized() {
+            try { return sessionStorage.getItem(AUTH_FLAG) === 'true'; } catch (_) { return false; }
+        }
+
+        function normalizeStr(s) {
+            try { return (s || '').normalize('NFKC').trim().toLowerCase(); } catch (_) { return (s || '').trim().toLowerCase(); }
+        }
+
+        function requestPassword() {
+            const input = prompt('Enter password to enable Dev Coins:');
+            if (input == null) return false; // cancelled
+            const val = normalizeStr(input);
+            const pass1 = normalizeStr('Björn');
+            const pass2 = normalizeStr('Bjoern');
+            if (val === pass1 || val === pass2) {
+                try { sessionStorage.setItem(AUTH_FLAG, 'true'); } catch (_) {}
+                return true;
+            }
+            alert('Wrong password.');
+            return false;
+        }
+
         window.toggleCoinDebug = function () {
-            let html = document.documentElement;
-            let isOn = html.classList.toggle('debug');
+            const html = document.documentElement;
+            const currentlyOn = html.classList.contains('debug');
+            // Only require password when enabling
+            if (!currentlyOn && !isAuthorized()) {
+                const ok = requestPassword();
+                if (!ok) { setLabel(); return; }
+            }
+            const isOn = html.classList.toggle('debug');
             try {
                 localStorage.setItem('casino-debug', isOn ? 'true' : 'false');
-            } catch (e) {
-            }
+            } catch (e) {}
             setLabel();
         };
+
         if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setLabel); else setLabel();
     })();
 </script>
 <div class="dark-mode-toggle">
-    <label class="switch">
-        <input type="checkbox" id="dark-mode-switch"/>
-        <span class="slider" aria-hidden="true"></span>
+    <label class="label">
+        <div class="toggle">
+            <input class="toggle-state" type="checkbox" id="dark-mode-switch" name="dark-mode" aria-label="Toggle dark mode" />
+            <div class="indicator"></div>
+        </div>
         <span class="switch-text">Dark Mode</span>
     </label>
+    
 </div>
 <div class="container">
-    <h1>Welcome to the Casino</h1>
+    <h1>
+        Welcome to
+        <span class="no-wrap"> the
+            <span class="casino-rotator" aria-label="Casino">
+                <span class="word">Casino</span>
+                <span class="word">Games</span>
+                <span class="word">Slots</span>
+                <span class="word">Cards</span>
+                <span class="word">Dice</span>
+            </span>
+        </span>
+    </h1>
     <div class="game-selection">
         <div class="game-card">
             <div class="game-icon">🎲</div>
@@ -129,5 +269,18 @@
 </div>
 <script src="js/darkmode.js"></script>
 <script src="js/age-verify.js"></script>
+
+<!-- Right-side Changelog card -->
+<div class="changelog-card" role="region" aria-label="Changelog panel">
+    <div class="changelog-inner">
+        <h3 class="changelog-header">Changelog</h3>
+        <div class="changelog-content">
+            <!-- Add your latest updates here -->
+            <p>
+                Too lazy..
+            </p>
+        </div>
+    </div>
+  </div>
 </body>
 </html>

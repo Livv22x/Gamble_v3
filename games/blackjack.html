@@ -26,6 +26,7 @@
 
     <span class="coin-amount" data-coin-balance>0</span>
 </div>
+<div class="coin-reset-countdown"><span data-coin-countdown>Next reset in --:--:--</span></div>
 <div class="coin-actions">
     <button type="button" class="coin-btn coin-btn--secondary" aria-label="Remove 100 coins"
             onclick="window.Coins && Coins.spend(100)">-100
@@ -39,6 +40,8 @@
 </div>
 <script>
     (function () {
+        const AUTH_FLAG = 'casino-devcoins-auth';
+
         function setLabel() {
             let btn = document.getElementById('coin-debug-toggle-btn');
             if (!btn) return;
@@ -46,22 +49,51 @@
             btn.textContent = isOn ? 'Disable Dev Coins' : 'Enable Dev Coins';
         }
 
+        function isAuthorized() {
+            try { return sessionStorage.getItem(AUTH_FLAG) === 'true'; } catch (_) { return false; }
+        }
+
+        function normalizeStr(s) {
+            try { return (s || '').normalize('NFKC').trim().toLowerCase(); } catch (_) { return (s || '').trim().toLowerCase(); }
+        }
+
+        function requestPassword() {
+            const input = prompt('Enter password to enable Dev Coins:');
+            if (input == null) return false;
+            const val = normalizeStr(input);
+            const pass1 = normalizeStr('Björn');
+            const pass2 = normalizeStr('Bjoern');
+            if (val === pass1 || val === pass2) {
+                try { sessionStorage.setItem(AUTH_FLAG, 'true'); } catch (_) {}
+                return true;
+            }
+            alert('Wrong password.');
+            return false;
+        }
+
         window.toggleCoinDebug = function () {
-            let html = document.documentElement;
-            let isOn = html.classList.toggle('debug');
+            const html = document.documentElement;
+            const currentlyOn = html.classList.contains('debug');
+            if (!currentlyOn && !isAuthorized()) {
+                const ok = requestPassword();
+                if (!ok) { setLabel(); return; }
+            }
+            const isOn = html.classList.toggle('debug');
             try {
                 localStorage.setItem('casino-debug', isOn ? 'true' : 'false');
-            } catch (e) {
-            }
+            } catch (e) {}
             setLabel();
         };
+
         if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setLabel); else setLabel();
     })();
 </script>
 <div class="dark-mode-toggle">
-    <label class="switch">
-        <input type="checkbox" id="dark-mode-switch"/>
-        <span class="slider" aria-hidden="true"></span>
+    <label class="label">
+        <div class="toggle">
+            <input class="toggle-state" type="checkbox" id="dark-mode-switch" name="dark-mode" aria-label="Toggle dark mode" />
+            <div class="indicator"></div>
+        </div>
         <span class="switch-text">Dark Mode</span>
     </label>
 </div>
@@ -96,13 +128,11 @@
         <div id="messages"></div>
 
         <div class="coin-rules" aria-label="Coin rules for Blackjack">
-            <h4>Coin Rules</h4>
-            <ul>
-                <li>No cost to start a new game.</li>
-                <li>Win (or dealer bust): receive 2× your bet.</li>
-                <li>Lose (including player bust): lose your bet.</li>
-                <li>Draw: no bet change.</li>
-            </ul>
+            <p><strong>Rules:</strong></p>
+            <p>No cost to start a new game.</p>
+            <p>Win (or dealer bust): receive 2× your bet.</p>
+            <p>Lose (including player bust): lose your bet.</p>
+            <p>Draw: no bet change.</p>
         </div>
     </div>
 </div>

@@ -1,4 +1,6 @@
-/* Für die nebeneinander stehenden Würfelbilder im Würfelspiel */
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap'); /* Für die nebeneinander stehenden Würfelbilder im Würfelspiel */
 .dice-row {
   display: flex;
   flex-direction: row;
@@ -9,10 +11,8 @@
 }
 
 /* Import Raleway font */
-@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap');
 
+/* Theme variables */
 :root {
   /* Light theme variables */
   --bg: #f5f5f5;
@@ -26,6 +26,9 @@
   --accent: #007BFF;
   --success: #2e7d32;
   --warning: #f57f17;
+  /* Grid background tokens */
+  --grid-size: 40px;
+  --grid-line: #e4e4e7; /* light grid line */
 }
 
 body {
@@ -36,6 +39,42 @@ body {
   background-color: var(--bg);
   color: var(--text);
   transition: background-color 300ms ease, color 300ms ease;
+}
+
+/* Countdown under coin counter (top-right, directly below .coin-display) */
+.coin-reset-countdown {
+  position: absolute;
+  top: 110px; /* just below the coins GUI (coin-debug-toggle at 132px) */
+  right: 10px;
+  z-index: 10;
+  font-size: 13px;
+  line-height: 1.3;
+  color: var(--muted);
+  text-align: right;
+  margin-top: 0; /* no extra gap when absolutely positioned */
+}
+
+html.dark-mode .coin-reset-countdown,
+body.dark-mode .coin-reset-countdown {
+  color: var(--muted);
+}
+
+/* Encrypted/reveal styling for the countdown text */
+.coin-reset-countdown [data-coin-countdown] {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  letter-spacing: 0.3px;
+  font-variant-numeric: tabular-nums; /* align digits nicely */
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 150ms ease;
+}
+
+.coin-reset-countdown [data-coin-countdown].is-encrypting {
+  color: var(--muted);
+}
+
+.coin-reset-countdown [data-coin-countdown].is-revealed {
+  color: var(--text);
 }
 
 /* Dark theme overrides - toggled by adding `dark-mode` to html or body */
@@ -52,6 +91,41 @@ body.dark-mode {
   --accent: #0b3d91;
   --success: #2e7d32;
   --warning: #f57f17;
+  --grid-line: #262626; /* dark grid line */
+}
+
+/*
+  Index grid background (mask-free)
+  Usage: add class "has-grid-bg" to <html> (preferred) on pages that should display the grid.
+  Layers:
+    1) radial-gradient to softly fade the grid toward the edges by blending into var(--bg)
+    2) vertical grid lines (to right)
+    3) horizontal grid lines (to bottom)
+    4) base fill var(--bg)
+*/
+html.has-grid-bg {
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(ellipse at center,
+      rgba(0,0,0,0) 20%,
+      var(--bg) 75%
+    ),
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size:
+    auto,
+    var(--grid-size) var(--grid-size),
+    var(--grid-size) var(--grid-size);
+  background-position:
+    0 0,
+    0 0,
+    0 0;
+  background-repeat: no-repeat, repeat, repeat;
+}
+
+/* When the grid is on the html element, make sure the body doesn't cover it */
+html.has-grid-bg body {
+  background-color: transparent;
 }
 
 /* Dark-mode link color for normal links (exclude buttons) */
@@ -139,9 +213,15 @@ h2 {
 }
 
 .game-card {
-  background: rgba(255, 255, 255, 0.95);
-  padding: 25px;
+  /* Mask-free animated gradient border using layered backgrounds */
   border-radius: 8px;
+  border: 3px solid transparent; /* gradient draws the border */
+  background:
+    linear-gradient(var(--card-bg), var(--card-bg)) padding-box,
+    linear-gradient(90deg, #1a2942, #3498db, #2d4263, #1a2942) border-box;
+  background-size: auto, 200% 100%;
+  animation: borderRotate 2s linear infinite; /* animates gradient layer */
+  padding: 22px; /* 25px minus 3px border to keep inner content size similar */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   width: 380px;
   transition: transform 0.3s ease, background-color 300ms ease, color 300ms ease, box-shadow 300ms ease;
@@ -154,22 +234,7 @@ h2 {
   overflow: hidden;
 }
 
-.game-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 8px;
-  padding: 3px;
-  background: linear-gradient(90deg, #1a2942, #3498db, #2d4263, #1a2942);
-  background-size: 200%;
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask-composite: exclude;
-  animation: borderRotate 2s linear infinite;
-  pointer-events: none;
-  z-index: 2;
-}
+/* Removed ::before mask-based border in favor of layered backgrounds above */
 
 @keyframes borderRotate {
   to {
@@ -220,7 +285,7 @@ body.dark-mode .game-icon {
 
 html.dark-mode .game-card,
 body.dark-mode .game-card {
-  background: rgba(42, 42, 42, 0.95);
+  /* Keep layered backgrounds; inner color already respects var(--card-bg) */
 }
 
 .game-card h2 {
@@ -592,76 +657,80 @@ body.dark-mode #result {
   color: var(--text);
 }
 
-/* Dark mode styles */
+/* Dark mode switch (neumorphic style) */
 .dark-mode-toggle {
-    position: absolute;
-    top: 10px;
-    right: 10px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
 }
 
-/* Switch markup: label.switch > input + .slider + .switch-text */
-.dark-mode-toggle .switch {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    user-select: none;
-}
-
-.dark-mode-toggle .switch input {
-    display: none;
-}
-
-.dark-mode-toggle .switch .slider {
-    width: 50px;
-    height: 26px;
-    background: rgba(0,0,0,0.08);
-    border-radius: 999px;
-    position: relative;
-    transition: background 200ms ease, box-shadow 200ms ease;
-    box-shadow: inset 0 1px 2px rgba(0,0,0,0.06);
-}
-
-.dark-mode-toggle .switch .slider::before {
-    content: "☀️";
-    position: absolute;
-    left: 3px;
-    top: 2px;
-    width: 20px;
-    height: 20px;
-    background: var(--primary-contrast);
-    border-radius: 50%;
-    transition: transform 200ms ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    font-weight: bold;
-}
-
-.dark-mode-toggle .switch input:checked + .slider::before {
-    content: "🌙";
-}
-
-.dark-mode-toggle .switch input:checked + .slider {
-    background: var(--primary);
-}
-
-.dark-mode-toggle .switch input:checked + .slider::before {
-    transform: translateX(24px);
-}
-
-.dark-mode-toggle .switch .switch-text {
-    font-size: 15px;
-    color: var(--text);
-}
-
-html.dark-mode .dark-mode-toggle .switch .switch-text,
-body.dark-mode .dark-mode-toggle .switch .switch-text {
+/* Structure: label.label > .toggle (contains input.toggle-state + .indicator) + .switch-text */
+.dark-mode-toggle .label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
   color: var(--text);
 }
-/* Adjusted font colors are handled by the theme variables declared at the top of the file. */
+
+.dark-mode-toggle .toggle {
+  isolation: isolate;
+  position: relative;
+  height: 30px;
+  width: 60px;
+  border-radius: 15px;
+  overflow: hidden;
+  background: var(--card-bg);
+  /* soft neu-like shadow */
+  box-shadow:
+    -6px -4px 10px rgba(255,255,255,0.25),
+    6px 4px 12px rgba(0,0,0,0.18),
+    inset 3px 3px 6px rgba(0,0,0,0.08),
+    inset -3px -3px 6px rgba(255,255,255,0.18);
+  transition: box-shadow 250ms ease, background-color 250ms ease;
+}
+
+html.dark-mode .dark-mode-toggle .toggle,
+body.dark-mode .dark-mode-toggle .toggle {
+  /* slightly flatter in dark mode */
+  box-shadow:
+    -4px -3px 8px rgba(255,255,255,0.05),
+    6px 4px 10px rgba(0,0,0,0.5),
+    inset 3px 3px 6px rgba(0,0,0,0.35),
+    inset -3px -3px 6px rgba(255,255,255,0.03);
+}
+
+.dark-mode-toggle .toggle-state {
+  display: none;
+}
+
+.dark-mode-toggle .indicator {
+  height: 100%;
+  width: 200%;
+  border-radius: 15px;
+  background: linear-gradient(90deg,
+    rgba(236,240,243,1) 0%, rgba(236,240,243,1) 50%,
+    rgba(32,32,38,1) 50%, rgba(32,32,38,1) 100%);
+  /* start with light (left) visible */
+  transform: translate3d(-75%, 0, 0);
+  transition: transform 0.4s cubic-bezier(0.85, 0.05, 0.18, 1.35);
+}
+
+/* Checked: slide to reveal dark half */
+.dark-mode-toggle .toggle-state:checked ~ .indicator {
+  transform: translate3d(25%, 0, 0);
+}
+
+.dark-mode-toggle .switch-text {
+  font-size: 15px;
+  color: var(--text);
+}
+
+html.dark-mode .dark-mode-toggle .switch-text,
+body.dark-mode .dark-mode-toggle .switch-text {
+  color: var(--text);
+}
 
 /* Coin display (top-right, left of the dark mode switch) */
 .coin-display {
@@ -746,6 +815,103 @@ body.debug .coin-actions {
   top: 132px; /* below coin actions */
   right: 10px;
   z-index: 10;
+}
+
+/* Right-side Changelog card — match site design + theme variables */
+.changelog-card {
+  position: absolute;
+  top: 180px; /* sits a little below the coins GUI */
+  right: 10px;
+  width: 192px;   /* w-48 */
+  height: 256px;  /* h-64 */
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--card-bg);
+  color: var(--text);
+  border: 1px solid rgba(0,0,0,0.08);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+  z-index: 9; /* under coin controls (10) but above page */
+  transition: background-color 300ms ease, color 300ms ease, border-color 300ms ease, box-shadow 300ms ease;
+}
+
+/* Remove decorative glow from original snippet */
+.changelog-card::before { display: none; }
+
+.changelog-inner {
+  position: relative;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 8px; /* create an inner padding comparable to other cards */
+  background: transparent; /* card owns the background */
+  color: inherit;
+}
+
+.changelog-header {
+  font-size: 18px;
+  font-weight: 700;
+  padding: 10px 12px;
+  margin: 0;
+  color: var(--text);
+  border-bottom: 1px solid rgba(0,0,0,0.12);
+}
+
+.changelog-content {
+  padding: 10px 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text);
+  flex: 1;                 /* take remaining vertical space */
+  overflow: auto;          /* scroll if content grows */
+}
+
+.changelog-content ul {
+  padding-left: 16px;
+  margin: 6px 0 0 0;
+}
+
+.changelog-content ul li {
+  list-style: none;
+  position: relative;
+  padding-left: 16px; /* space for custom bullet */
+  margin: 6px 0;
+}
+
+.changelog-content ul li::before {
+  content: "✔";
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--primary);
+  font-size: 0.9em;
+  line-height: 1.6;
+}
+
+/* Dark mode — rely on theme vars; only adjust subtle borders/shadows */
+html.dark-mode .changelog-card,
+body.dark-mode .changelog-card {
+  background: var(--card-bg);
+  color: var(--text);
+  border-color: rgba(255,255,255,0.08);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+}
+
+html.dark-mode .changelog-header,
+body.dark-mode .changelog-header {
+  border-bottom-color: rgba(255,255,255,0.12);
+}
+
+/* Responsive: on small screens, let the card flow below content */
+@media (max-width: 900px) {
+  .changelog-card {
+    position: static;
+    width: 100%;
+    max-width: 420px;
+    height: auto;
+    margin: 16px auto 0;
+  }
+  .changelog-inner { height: auto; padding: 10px; }
 }
 
 .coin-debug-toggle .coin-btn {
@@ -909,31 +1075,26 @@ body.dark-mode .submit-button:hover {
   background-color: var(--primary-hover);
 }
 
-/* Coin rules box shown on game pages */
+/* Coin rules text (borderless, like Würfelspiel rules) */
 .coin-rules {
-  margin-top: 16px;
-  padding: 12px 14px;
-  background: var(--card-bg);
+  margin-top: 12px;
+  padding: 0 10px; /* small horizontal breathing room */
+  background: transparent; /* no card background */
   color: var(--text);
-  border: 1px solid rgba(0,0,0,0.08);
-  border-radius: 8px;
-  text-align: left;
+  border: none; /* no border */
+  border-radius: 0; /* no rounding needed */
+  text-align: center; /* consistent with Würfelspiel */
+  line-height: 1.6;
+  font-size: 15px;
+  max-width: 680px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 html.dark-mode .coin-rules,
-body.dark-mode .coin-rules {
-  background: var(--card-bg);
-  border-color: rgba(255,255,255,0.08);
+body.dark-mode .coin-rules { /* keep color via theme var; nothing else needed */
+  background: transparent;
+  border: none;
 }
 
-.coin-rules h4 {
-  margin: 0 0 8px 0;
-  font-size: 16px;
-}
-
-.coin-rules ul {
-  margin: 0;
-  padding-left: 18px;
-}
-
-.coin-rules li { line-height: 1.5; }
+.coin-rules p { margin: 6px 0; }
