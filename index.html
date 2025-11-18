@@ -1,113 +1,132 @@
 <!DOCTYPE html>
 <html lang="de">
-  <head>
-    <meta charset="UTF-8" />
+<head>
+    <meta charset="UTF-8"/>
     <title>Casino Games</title>
     <script>
-      (function(){
-        try{
-          if(localStorage.getItem('casino-dark-mode') === 'true'){
-            document.documentElement.classList.add('dark-mode');
-          }
-          if(localStorage.getItem('casino-debug') === 'true'){
-            document.documentElement.classList.add('debug');
-          }
-        }catch(e){}
-      })();
+        (function () {
+            try {
+                if (localStorage.getItem('casino-dark-mode') === 'true') {
+                    document.documentElement.classList.add('dark-mode');
+                }
+                if (localStorage.getItem('casino-debug') === 'true') {
+                    document.documentElement.classList.add('debug');
+                }
+            } catch (e) {
+            }
+        })();
     </script>
-    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="css/styles.css"/>
     <script src="js/coin-system.js"></script>
-  </head>
-  <body>
-    <div class="coin-display" title="Your Coins">
-      <span class="coin-icon">🪙</span>
-      <span class="coin-amount" data-coin-balance>0</span>
-    </div>
-    <div class="coin-actions">
-      <button type="button" class="coin-btn coin-btn--secondary" aria-label="Remove 100 coins" onclick="window.Coins && Coins.spend(100)">-100</button>
-      <button type="button" class="coin-btn" aria-label="Add 100 coins" onclick="window.Coins && Coins.add(100)">+100</button>
-    </div>
-    <div class="coin-debug-toggle">
-      <button id="coin-debug-toggle-btn" type="button" class="coin-btn" onclick="toggleCoinDebug()">Enable Dev Coins</button>
-    </div>
-    <script>
-      (function(){
-        function setLabel(){
-          var btn = document.getElementById('coin-debug-toggle-btn');
-          if(!btn) return;
-          var isOn = document.documentElement.classList.contains('debug');
-          btn.textContent = isOn ? 'Disable Dev Coins' : 'Enable Dev Coins';
+</head>
+<body>
+<div class="coin-display" title="Your Coin">
+    <!-- index.html -->
+    <span class="coin-icon">🪙</span>
+
+    <span class="coin-amount" data-coin-balance>0</span>
+</div>
+<div class="coin-actions">
+    <button type="button" class="coin-btn coin-btn--secondary" aria-label="Remove 100 coins"
+            onclick="window.Coins && Coins.spend(100)">-100
+    </button>
+    <button type="button" class="coin-btn" aria-label="Add 100 coins" onclick="window.Coins && Coins.add(100)">+100
+    </button>
+</div>
+<div class="coin-debug-toggle">
+    <button id="coin-debug-toggle-btn" type="button" class="coin-btn" onclick="toggleCoinDebug()">Enable Dev Coins
+    </button>
+</div>
+<script>
+    (function () {
+        function setLabel() {
+            let btn = document.getElementById('coin-debug-toggle-btn');
+            if (!btn) return;
+            let isOn = document.documentElement.classList.contains('debug');
+            btn.textContent = isOn ? 'Disable Dev Coins' : 'Enable Dev Coins';
         }
-        window.toggleCoinDebug = function(){
-          var html = document.documentElement;
-          var isOn = html.classList.toggle('debug');
-          try { localStorage.setItem('casino-debug', isOn ? 'true' : 'false'); } catch(e){}
-          setLabel();
+
+        window.toggleCoinDebug = function () {
+            let html = document.documentElement;
+            let isOn = html.classList.toggle('debug');
+            try {
+                localStorage.setItem('casino-debug', isOn ? 'true' : 'false');
+            } catch (e) {
+            }
+            setLabel();
         };
-        if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setLabel); else setLabel();
-      })();
-    </script>
-    <div class="dark-mode-toggle">
-      <label class="switch">
-        <input type="checkbox" id="dark-mode-switch" />
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setLabel); else setLabel();
+    })();
+</script>
+<div class="dark-mode-toggle">
+    <label class="switch">
+        <input type="checkbox" id="dark-mode-switch"/>
         <span class="slider" aria-hidden="true"></span>
         <span class="switch-text">Dark Mode</span>
-      </label>
+    </label>
+</div>
+<div class="container">
+    <h1>Welcome to the Casino</h1>
+    <div class="game-selection">
+        <div class="game-card">
+            <div class="game-icon">🎲</div>
+            <div class="game-info">
+                <h2>Dice Game</h2>
+                <p>Try to guess the right number!</p>
+                <a href="games/wuerfelspiel.html" class="game-button">Play Dice Game</a>
+            </div>
+        </div>
+        <div class="game-card">
+            <div class="game-icon">🃏</div>
+            <div class="game-info">
+                <h2>Blackjack</h2>
+                <p>Classic casino card game</p>
+                <a href="games/blackjack.html" class="game-button">Play Blackjack</a>
+            </div>
+        </div>
+        <div class="game-card">
+            <div class="game-icon">🎰</div>
+            <div class="game-info">
+                <h2>Slot Machine</h2>
+                <p>Spin the reels and try your luck!</p>
+                <a href="games/slotmachine.html" class="game-button">Play Slot Machine</a>
+            </div>
+        </div>
+        <div class="game-card">
+            <div class="game-icon">🐓</div>
+            <div class="game-info">
+                <h2>Cockfight</h2>
+                <p>Pick your champion</p>
+                <a href="games/cockfight.html" class="game-button">Watch Cockfight</a>
+            </div>
+        </div>
     </div>
-    <div class="container">
-      <h1>Welcome to the Casino</h1>
-      <div class="game-selection">
-        <div class="game-card">
-          <div class="game-icon">🎲</div>
-          <div class="game-info">
-            <h2>Dice Game</h2>
-            <p>Try to guess the right number!</p>
-            <a href="games/wuerfelspiel.html" class="game-button">Play Dice Game</a>
-          </div>
-        </div>
-        <div class="game-card">
-          <div class="game-icon">🃏</div>
-          <div class="game-info">
-            <h2>Blackjack</h2>
-            <p>Classic casino card game</p>
-            <a href="games/blackjack.html" class="game-button">Play Blackjack</a>
-          </div>
-        </div>
-        <div class="game-card">
-          <div class="game-icon">🎰</div>
-          <div class="game-info">
-            <h2>Slot Machine</h2>
-            <p>Spin the reels and try your luck!</p>
-            <a href="games/slotmachine.html" class="game-button">Play Slot Machine</a>
-          </div>
-        </div>
-        <div class="game-card">
-          <div class="game-icon">🐓</div>
-          <div class="game-info">
-            <h2>Cockfight</h2>
-            <p>Pick your champion</p>
-            <a href="games/cockfight.html" class="game-button">Watch Cockfight</a>
-          </div>
-        </div>
-      </div>
-      
-      <div class="socials-container">
+
+    <div class="socials-container">
         <a data-social="Twitter" style="--accent-color: black;" href="https://x.com/Lxx464" target="_blank">
-          <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>X</title><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg>
+            <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>X</title>
+                <path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/>
+            </svg>
         </a>
-        <a data-social="Threads" style="--accent-color: #000000;" href="https://www.threads.com/@lca7722" target="_blank">
-          <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Threads</title><path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.292 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.783 3.631 2.698 6.54 2.717 2.623-.02 4.358-.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-.31-.71-.873-1.3-1.634-1.75-.192 1.352-.622 2.446-1.284 3.272-.886 1.102-2.14 1.704-3.73 1.79-1.202.065-2.361-.218-3.259-.801-1.063-.689-1.685-1.74-1.752-2.964-.065-1.19.408-2.285 1.33-3.082.88-.76 2.119-1.207 3.583-1.291a13.853 13.853 0 0 1 3.02.142c-.126-.742-.375-1.332-.75-1.757-.513-.586-1.308-.883-2.359-.883h-.029c-.844 0-1.992.232-2.721 1.32L7.734 7.847c.98-1.454 2.568-2.256 4.478-2.256h.044c3.194.02 5.097 1.975 5.287 5.388.108.046.216.094.321.142 1.49.7 2.58 1.761 3.154 3.07.797 1.82.871 4.79-1.548 7.158-1.85 1.81-4.094 2.628-7.277 2.65Zm1.003-11.69c-.242 0-.487.007-.739.021-1.836.103-2.98.946-2.916 2.143.067 1.256 1.452 1.839 2.784 1.767 1.224-.065 2.818-.543 3.086-3.71a10.5 10.5 0 0 0-2.215-.221z"/></svg>
+        <a data-social="Threads" style="--accent-color: #000000;" href="https://www.threads.com/@lca7722"
+           target="_blank">
+            <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Threads</title>
+                <path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.292 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.783 3.631 2.698 6.54 2.717 2.623-.02 4.358-.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-.31-.71-.873-1.3-1.634-1.75-.192 1.352-.622 2.446-1.284 3.272-.886 1.102-2.14 1.704-3.73 1.79-1.202.065-2.361-.218-3.259-.801-1.063-.689-1.685-1.74-1.752-2.964-.065-1.19.408-2.285 1.33-3.082.88-.76 2.119-1.207 3.583-1.291a13.853 13.853 0 0 1 3.02.142c-.126-.742-.375-1.332-.75-1.757-.513-.586-1.308-.883-2.359-.883h-.029c-.844 0-1.992.232-2.721 1.32L7.734 7.847c.98-1.454 2.568-2.256 4.478-2.256h.044c3.194.02 5.097 1.975 5.287 5.388.108.046.216.094.321.142 1.49.7 2.58 1.761 3.154 3.07.797 1.82.871 4.79-1.548 7.158-1.85 1.81-4.094 2.628-7.277 2.65Zm1.003-11.69c-.242 0-.487.007-.739.021-1.836.103-2.98.946-2.916 2.143.067 1.256 1.452 1.839 2.784 1.767 1.224-.065 2.818-.543 3.086-3.71a10.5 10.5 0 0 0-2.215-.221z"/>
+            </svg>
         </a>
-        <a data-social="Discord" style="--accent-color: #5865F2;" href="https://discord.com/users/1192160145095012447" target="_blank">
-          <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Discord</title><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/></svg>
+        <a data-social="Discord" style="--accent-color: #5865F2;" href="https://discord.com/users/1192160145095012447"
+           target="_blank">
+            <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Discord</title>
+                <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/>
+            </svg>
         </a>
-      </div>
-      
-      <div class="button-container">
-        <a href="games/feedback.html" class="button-link">Feedback</a>
-      </div>
     </div>
-    <script src="js/darkmode.js"></script>
-    <script src="js/age-verify.js"></script>
-  </body>
+
+    <div class="button-container">
+        <a href="games/feedback.html" class="button-link">Feedback</a>
+    </div>
+</div>
+<script src="js/darkmode.js"></script>
+<script src="js/age-verify.js"></script>
+</body>
 </html>

@@ -1,191 +1,202 @@
 <!DOCTYPE html>
 <html lang="de">
-  <head>
-    <meta charset="UTF-8" />
+<head>
+    <meta charset="UTF-8"/>
     <title>Blackjack - Casino Games</title>
     <script>
-      (function(){
-        try{
-          if(localStorage.getItem('casino-dark-mode') === 'true'){
-            document.documentElement.classList.add('dark-mode');
-          }
-          if(localStorage.getItem('casino-debug') === 'true'){
-            document.documentElement.classList.add('debug');
-          }
-        }catch(e){}
-      })();
+        (function () {
+            try {
+                if (localStorage.getItem('casino-dark-mode') === 'true') {
+                    document.documentElement.classList.add('dark-mode');
+                }
+                if (localStorage.getItem('casino-debug') === 'true') {
+                    document.documentElement.classList.add('debug');
+                }
+            } catch (e) {
+            }
+        })();
     </script>
-    <link rel="stylesheet" href="../css/styles.css" />
+    <link rel="stylesheet" href="../css/styles.css"/>
     <script src="../js/coin-system.js"></script>
-  </head>
-  <body>
-    <div class="coin-display" title="Your Coins">
-      <span class="coin-icon">🪙</span>
-      <span class="coin-amount" data-coin-balance>0</span>
-    </div>
-    <div class="coin-actions">
-      <button type="button" class="coin-btn coin-btn--secondary" aria-label="Remove 100 coins" onclick="window.Coins && Coins.spend(100)">-100</button>
-      <button type="button" class="coin-btn" aria-label="Add 100 coins" onclick="window.Coins && Coins.add(100)">+100</button>
-    </div>
-    <div class="coin-debug-toggle">
-      <button id="coin-debug-toggle-btn" type="button" class="coin-btn" onclick="toggleCoinDebug()">Enable Dev Coins</button>
-    </div>
-    <script>
-      (function(){
-        function setLabel(){
-          var btn = document.getElementById('coin-debug-toggle-btn');
-          if(!btn) return;
-          var isOn = document.documentElement.classList.contains('debug');
-          btn.textContent = isOn ? 'Disable Dev Coins' : 'Enable Dev Coins';
+</head>
+<body>
+<div class="coin-display" title="Your Coins">
+    <!-- index.html -->
+    <span class="coin-icon">🪙</span>
+
+    <span class="coin-amount" data-coin-balance>0</span>
+</div>
+<div class="coin-actions">
+    <button type="button" class="coin-btn coin-btn--secondary" aria-label="Remove 100 coins"
+            onclick="window.Coins && Coins.spend(100)">-100
+    </button>
+    <button type="button" class="coin-btn" aria-label="Add 100 coins" onclick="window.Coins && Coins.add(100)">+100
+    </button>
+</div>
+<div class="coin-debug-toggle">
+    <button id="coin-debug-toggle-btn" type="button" class="coin-btn" onclick="toggleCoinDebug()">Enable Dev Coins
+    </button>
+</div>
+<script>
+    (function () {
+        function setLabel() {
+            let btn = document.getElementById('coin-debug-toggle-btn');
+            if (!btn) return;
+            let isOn = document.documentElement.classList.contains('debug');
+            btn.textContent = isOn ? 'Disable Dev Coins' : 'Enable Dev Coins';
         }
-        window.toggleCoinDebug = function(){
-          var html = document.documentElement;
-          var isOn = html.classList.toggle('debug');
-          try { localStorage.setItem('casino-debug', isOn ? 'true' : 'false'); } catch(e){}
-          setLabel();
+
+        window.toggleCoinDebug = function () {
+            let html = document.documentElement;
+            let isOn = html.classList.toggle('debug');
+            try {
+                localStorage.setItem('casino-debug', isOn ? 'true' : 'false');
+            } catch (e) {
+            }
+            setLabel();
         };
-        if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setLabel); else setLabel();
-      })();
-    </script>
-    <div class="dark-mode-toggle">
-      <label class="switch">
-        <input type="checkbox" id="dark-mode-switch" />
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setLabel); else setLabel();
+    })();
+</script>
+<div class="dark-mode-toggle">
+    <label class="switch">
+        <input type="checkbox" id="dark-mode-switch"/>
         <span class="slider" aria-hidden="true"></span>
         <span class="switch-text">Dark Mode</span>
-      </label>
-    </div>
-    <div class="container">
-      <a href="../index.html" class="back-button">← Back to Home</a>
-      <h1>Blackjack</h1>
+    </label>
+</div>
+<div class="container">
+    <a href="../index.html" class="back-button">← Back to Home</a>
+    <h1>Blackjack</h1>
 
-      <div class="game-area">
+    <div class="game-area">
         <div
-          class="dealer-hand"
-          style="width: 100%; max-width: 400px; margin: 0 auto 10px"
+                class="dealer-hand"
+                style="width: 100%; max-width: 400px; margin: 0 auto 10px"
         >
-          <h3>Dealer:</h3>
-          <div id="dealer-cards" style="margin-bottom: 5px"></div>
-          <div><strong>Points:</strong> <span id="dealer-sum">0</span></div>
+            <h3>Dealer:</h3>
+            <div id="dealer-cards" style="margin-bottom: 5px"></div>
+            <div><strong>Points:</strong> <span id="dealer-sum">0</span></div>
         </div>
         <div
-          class="player-hand"
-          style="width: 100%; max-width: 400px; margin: 0 auto 10px"
+                class="player-hand"
+                style="width: 100%; max-width: 400px; margin: 0 auto 10px"
         >
-          <h3>You:</h3>
-          <div id="player-cards" style="margin-bottom: 5px"></div>
-          <div><strong>Points:</strong> <span id="player-sum">0</span></div>
+            <h3>You:</h3>
+            <div id="player-cards" style="margin-bottom: 5px"></div>
+            <div><strong>Points:</strong> <span id="player-sum">0</span></div>
         </div>
         <div class="game-controls">
-          <label for="betAmount">Bet (coins):</label>
-          <input type="number" id="betAmount" min="1" value="10" />
-          <button id="hit-button">Hit</button>
-          <button id="stand-button">Stand</button>
-          <button id="new-game-button">New Game</button>
+            <label for="betAmount">Bet (coins):</label>
+            <input type="number" id="betAmount" min="1" value="10"/>
+            <button id="hit-button">Hit</button>
+            <button id="stand-button">Stand</button>
+            <button id="new-game-button">New Game</button>
         </div>
         <div id="messages"></div>
 
         <div class="coin-rules" aria-label="Coin rules for Blackjack">
-          <h4>Coin Rules</h4>
-          <ul>
-            <li>No cost to start a new game.</li>
-            <li>Win (or dealer bust): receive 2× your bet.</li>
-            <li>Lose (including player bust): lose your bet.</li>
-            <li>Draw: no bet change.</li>
-          </ul>
+            <h4>Coin Rules</h4>
+            <ul>
+                <li>No cost to start a new game.</li>
+                <li>Win (or dealer bust): receive 2× your bet.</li>
+                <li>Lose (including player bust): lose your bet.</li>
+                <li>Draw: no bet change.</li>
+            </ul>
         </div>
-      </div>
     </div>
+</div>
 
-    <script>
-      let deck = [];
-      let playerHand = [];
-      let dealerHand = [];
-      let gameOver = false;
-      let currentBet = 0;
+<script>
+    let deck = [];
+    let playerHand = [];
+    let dealerHand = [];
+    let gameOver = false;
+    let currentBet = 0;
 
-      function createDeck() {
+    function createDeck() {
         const suits = ["♠", "♣", "♥", "♦"];
         const values = [
-          "A",
-          "2",
-          "3",
-          "4",
-          "5",
-          "6",
-          "7",
-          "8",
-          "9",
-          "10",
-          "J",
-          "Q",
-          "K",
+            "A",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "J",
+            "Q",
+            "K",
         ];
         deck = [];
         for (let suit of suits) {
-          for (let value of values) {
-            deck.push({ suit, value });
-          }
+            for (let value of values) {
+                deck.push({suit, value});
+            }
         }
         // Mische das Deck
         for (let i = deck.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [deck[i], deck[j]] = [deck[j], deck[i]];
+            const j = Math.floor(Math.random() * (i + 1));
+            [deck[i], deck[j]] = [deck[j], deck[i]];
         }
-      }
+    }
 
-      function getCardValue(card) {
+    function getCardValue(card) {
         if (card.value === "A") return 11;
         if (["K", "Q", "J"].includes(card.value)) return 10;
         return parseInt(card.value);
-      }
+    }
 
-      function calculateHand(hand) {
+    function calculateHand(hand) {
         let sum = 0;
         let aces = 0;
 
         for (let card of hand) {
-          if (card.value === "A") {
-            aces++;
-            sum += 11;
-          } else {
-            sum += getCardValue(card);
-          }
+            if (card.value === "A") {
+                aces++;
+                sum += 11;
+            } else {
+                sum += getCardValue(card);
+            }
         }
 
         while (sum > 21 && aces > 0) {
-          sum -= 10;
-          aces--;
+            sum -= 10;
+            aces--;
         }
 
         return sum;
-      }
+    }
 
-      function drawCard() {
+    function drawCard() {
         return deck.pop();
-      }
+    }
 
-      function updateDisplay() {
+    function updateDisplay() {
         document.getElementById("player-sum").textContent =
-          calculateHand(playerHand);
+            calculateHand(playerHand);
         document.getElementById("dealer-sum").textContent =
-          calculateHand(dealerHand);
+            calculateHand(dealerHand);
 
         document.getElementById("player-cards").innerHTML = playerHand
-          .map((card) => `<div class="card">${card.value}${card.suit}</div>`)
-          .join("");
+            .map((card) => `<div class="card">${card.value}${card.suit}</div>`)
+            .join("");
 
         document.getElementById("dealer-cards").innerHTML = dealerHand
-          .map((card) => `<div class="card">${card.value}${card.suit}</div>`)
-          .join("");
-      }
+            .map((card) => `<div class="card">${card.value}${card.suit}</div>`)
+            .join("");
+    }
 
-      function startGame() {
+    function startGame() {
         const betInput = document.getElementById('betAmount');
         const bet = Math.max(1, parseInt(betInput.value) || 1);
         // Only validate, don't deduct yet
         if (!window.Coins || !Coins.canAfford(bet)) {
-          document.getElementById("messages").textContent = "Not enough coins for this bet.";
-          return;
+            document.getElementById("messages").textContent = "Not enough coins for this bet.";
+            return;
         }
         currentBet = bet;
         createDeck();
@@ -194,27 +205,27 @@
         gameOver = false;
         updateDisplay();
         document.getElementById("messages").textContent = "";
-      }
+    }
 
-      function hit() {
+    function hit() {
         if (gameOver) return;
 
         playerHand.push(drawCard());
         updateDisplay();
 
         if (calculateHand(playerHand) > 21) {
-          gameOver = true;
-          document.getElementById("messages").textContent = "Bust! You lost!";
-          // deduct bet on loss
-          if (window.Coins) Coins.spend(currentBet);
+            gameOver = true;
+            document.getElementById("messages").textContent = "Bust! You lost!";
+            // deduct bet on loss
+            if (window.Coins) Coins.spend(currentBet);
         }
-      }
+    }
 
-      function stand() {
+    function stand() {
         if (gameOver) return;
 
         while (calculateHand(dealerHand) < 17) {
-          dealerHand.push(drawCard());
+            dealerHand.push(drawCard());
         }
 
         const playerSum = calculateHand(playerHand);
@@ -223,34 +234,34 @@
         updateDisplay();
 
         if (dealerSum > 21) {
-          document.getElementById("messages").textContent =
-            "Dealer bust! You win!";
-          if (window.Coins) Coins.add(currentBet * 2);
+            document.getElementById("messages").textContent =
+                "Dealer bust! You win!";
+            if (window.Coins) Coins.add(currentBet * 2);
         } else if (dealerSum > playerSum) {
-          document.getElementById("messages").textContent = "Dealer wins!";
-          // deduct bet on loss
-          if (window.Coins) Coins.spend(currentBet);
+            document.getElementById("messages").textContent = "Dealer wins!";
+            // deduct bet on loss
+            if (window.Coins) Coins.spend(currentBet);
         } else if (dealerSum < playerSum) {
-          document.getElementById("messages").textContent = "You win!";
-          if (window.Coins) Coins.add(currentBet * 2);
+            document.getElementById("messages").textContent = "You win!";
+            if (window.Coins) Coins.add(currentBet * 2);
         } else {
-          document.getElementById("messages").textContent = "Draw!";
-          // draw: no bet change, nothing to refund or deduct
+            document.getElementById("messages").textContent = "Draw!";
+            // draw: no bet change, nothing to refund or deduct
         }
 
         gameOver = true;
-      }
+    }
 
-      document.getElementById("hit-button").addEventListener("click", hit);
-      document.getElementById("stand-button").addEventListener("click", stand);
-      document
+    document.getElementById("hit-button").addEventListener("click", hit);
+    document.getElementById("stand-button").addEventListener("click", stand);
+    document
         .getElementById("new-game-button")
         .addEventListener("click", startGame);
 
-      // Starte das erste Spiel
-      startGame();
-    </script>
-    <script src="../js/darkmode.js"></script>
-    <script src="../js/age-verify.js"></script>
-  </body>
+    // Starte das erste Spiel
+    startGame();
+</script>
+<script src="../js/darkmode.js"></script>
+<script src="../js/age-verify.js"></script>
+</body>
 </html>
